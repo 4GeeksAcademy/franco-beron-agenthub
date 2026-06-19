@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="es" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Panel interno de administracion AgentHub para gestionar usuarios, agentes, skills, contrataciones y errores."
+    />
+    <title>AgentHub - Panel de Administracion</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="h-full bg-[var(--bg)] text-[var(--text)] antialiased">
+    <a href="#contenido-principal" class="skip-link"
+      >Saltar al contenido principal</a
+    >
+
+    <header class="sr-only">
+      <h1>AgentHub - Panel de Administracion</h1>
+    </header>
+
+    <div id="app-layout" class="min-h-full lg:grid lg:grid-cols-[280px_1fr]">
+      <aside
+        id="sidebar"
+        class="sidebar-drawer border-r border-[var(--border)] bg-[var(--panel)]"
+        aria-label="Navegacion principal"
+      >
+        <div class="flex h-20 items-center justify-between px-6">
+          <p class="text-lg font-semibold tracking-tight">AgentHub</p>
+          <button
+            id="close-sidebar"
+            type="button"
+            class="rounded-lg p-2 text-[var(--muted)] hover:bg-[var(--soft)] md:hidden"
+            aria-label="Cerrar menu lateral"
+          >
+            <span aria-hidden="true">✕</span>
+          </button>
+        </div>
+
+        <nav class="px-4 pb-6" aria-label="Secciones del panel">
+          <ul class="space-y-2" id="sidebar-nav-list">
+            <li>
+              <button
+                type="button"
+                class="nav-link"
+                data-section="dashboard"
+                aria-current="page"
+              >
+                Dashboard
+              </button>
+            </li>
+            <li>
+              <button type="button" class="nav-link" data-section="users">
+                Gestion de Usuarios
+              </button>
+            </li>
+            <li>
+              <button type="button" class="nav-link" data-section="agents">
+                Gestion de Agentes
+              </button>
+            </li>
+            <li>
+              <button type="button" class="nav-link" data-section="skills">
+                Skills
+              </button>
+            </li>
+            <li>
+              <button type="button" class="nav-link" data-section="contracts">
+                Contrataciones
+              </button>
+            </li>
+            <li>
+              <button type="button" class="nav-link" data-section="errors">
+                Log de Errores
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <main id="contenido-principal" class="min-w-0">
+        <header
+          class="sticky top-0 z-30 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_92%,transparent)] backdrop-blur"
+        >
+          <div class="flex h-20 items-center gap-4 px-4 md:px-6">
+            <button
+              id="open-sidebar"
+              type="button"
+              class="rounded-lg border border-[var(--border)] p-2 text-[var(--muted)] hover:bg-[var(--soft)] md:hidden"
+              aria-controls="sidebar"
+              aria-expanded="false"
+              aria-label="Abrir menu lateral"
+            >
+              <span aria-hidden="true">☰</span>
+            </button>
+
+            <h2
+              id="section-title"
+              class="hidden text-xl font-semibold tracking-tight md:block"
+            >
+              Dashboard
+            </h2>
+
+            <div class="ml-auto flex items-center gap-3">
+              <label for="topbar-search" class="sr-only"
+                >Buscar en el panel</label
+              >
+              <input
+                id="topbar-search"
+                type="search"
+                placeholder="Buscar..."
+                class="h-10 w-28 rounded-lg border border-[var(--border)] bg-[var(--panel)] px-3 text-sm text-[var(--text)] placeholder:text-[var(--muted)] sm:w-56"
+                aria-label="Buscar en el panel"
+              />
+              <button
+                id="theme-toggle"
+                type="button"
+                class="grid h-10 w-10 place-items-center rounded-lg border border-[var(--border)] text-lg leading-none hover:bg-[var(--soft)]"
+                aria-label="Cambiar modo oscuro"
+                aria-pressed="false"
+                title="Cambiar tema"
+              >
+                🌙
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <section
+          id="dashboard"
+          class="section-panel"
+          aria-labelledby="section-title-dashboard"
+        >
+          <h2 id="section-title-dashboard" class="sr-only">Dashboard</h2>
+
+          <article aria-labelledby="metrics-title" class="space-y-6">
+            <h3 id="metrics-title" class="text-lg font-semibold">
+              Metricas clave
+            </h3>
+            <div
+              class="grid gap-4 md:grid-cols-2 xl:grid-cols-4"
+              id="metrics-grid"
+            ></div>
+          </article>
+
+          <article class="panel mt-8" aria-labelledby="weekly-activity-title">
+            <header class="mb-4">
+              <h3 id="weekly-activity-title" class="text-lg font-semibold">
+                Actividad semanal
+              </h3>
+              <p class="text-sm text-[var(--muted)]">
+                Visualizacion referencial del comportamiento de la plataforma.
+              </p>
+            </header>
+            <div
+              id="weekly-activity-chart"
+              class="activity-placeholder"
+              role="img"
+              aria-label="Placeholder visual de actividad semanal"
+            ></div>
+          </article>
+        </section>
+
+        <section
+          id="users"
+          class="section-panel hidden"
+          aria-labelledby="section-title-users"
+        >
+          <h2
+            id="section-title-users"
+            class="text-2xl font-semibold tracking-tight"
+          >
+            Gestion de Usuarios
+          </h2>
+          <article class="panel mt-6 overflow-hidden">
+            <div class="table-scroll">
+              <table class="table-base" id="users-table">
+                <caption class="caption-base">
+                  Listado de usuarios registrados en AgentHub
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Plan</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section
+          id="agents"
+          class="section-panel hidden"
+          aria-labelledby="section-title-agents"
+        >
+          <h2
+            id="section-title-agents"
+            class="text-2xl font-semibold tracking-tight"
+          >
+            Gestion de Agentes
+          </h2>
+          <article class="panel mt-6 overflow-hidden">
+            <div class="table-scroll">
+              <table class="table-base" id="agents-table">
+                <caption class="caption-base">
+                  Listado de agentes operativos y su estado
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Nombre del agente</th>
+                    <th scope="col">Propietario</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Skills asociadas</th>
+                    <th scope="col">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section
+          id="skills"
+          class="section-panel hidden"
+          aria-labelledby="section-title-skills"
+        >
+          <h2
+            id="section-title-skills"
+            class="text-2xl font-semibold tracking-tight"
+          >
+            Skills
+          </h2>
+          <article class="panel mt-6" aria-labelledby="skills-info-title">
+            <h3 id="skills-info-title" class="text-lg font-semibold">
+              Que es una Skill
+            </h3>
+            <p class="mt-2 text-sm text-[var(--muted)]">
+              Una Skill es una capacidad reutilizable que puede asignarse a uno
+              o mas agentes de IA. Permite extender sus funcionalidades para
+              realizar tareas especificas como navegacion web, gestion de
+              calendarios o analisis documental.
+            </p>
+          </article>
+          <article class="panel mt-6 overflow-hidden">
+            <div class="table-scroll">
+              <table class="table-base" id="skills-table">
+                <caption class="caption-base">
+                  Catalogo de skills disponibles
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Descripcion</th>
+                    <th scope="col">Cantidad de agentes</th>
+                    <th scope="col">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section
+          id="contracts"
+          class="section-panel hidden"
+          aria-labelledby="section-title-contracts"
+        >
+          <h2
+            id="section-title-contracts"
+            class="text-2xl font-semibold tracking-tight"
+          >
+            Contrataciones
+          </h2>
+          <article class="panel mt-6 overflow-hidden">
+            <div class="table-scroll">
+              <table class="table-base" id="contracts-table">
+                <caption class="caption-base">
+                  Contrataciones activas e historicas de agentes
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Agente</th>
+                    <th scope="col">Skills contratadas</th>
+                    <th scope="col">Fecha inicio</th>
+                    <th scope="col">Fecha fin</th>
+                    <th scope="col">Importe total</th>
+                    <th scope="col">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section
+          id="errors"
+          class="section-panel hidden"
+          aria-labelledby="section-title-errors"
+        >
+          <h2
+            id="section-title-errors"
+            class="text-2xl font-semibold tracking-tight"
+          >
+            Log de Errores
+          </h2>
+          <article class="panel mt-6 overflow-hidden">
+            <div class="table-scroll">
+              <table class="table-base" id="errors-table">
+                <caption class="caption-base">
+                  Eventos de error y advertencia de la plataforma
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Fecha y hora</th>
+                    <th scope="col">Agente</th>
+                    <th scope="col">Severidad</th>
+                    <th scope="col">Resumen</th>
+                    <th scope="col">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <footer
+          class="border-t border-[var(--border)] px-4 py-6 text-sm text-[var(--muted)] md:px-6"
+        >
+          AgentHub Admin Panel · Prototipo frontend con datos simulados.
+        </footer>
+      </main>
+    </div>
+
+    <dialog
+      id="modal-root"
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      aria-describedby="modal-description"
+    >
+      <article class="modal-card" tabindex="-1">
+        <header class="mb-4 flex items-start justify-between gap-4">
+          <div>
+            <h3 id="modal-title" class="text-xl font-semibold"></h3>
+            <p
+              id="modal-description"
+              class="mt-1 text-sm text-[var(--muted)]"
+            ></p>
+          </div>
+          <button
+            type="button"
+            class="icon-btn"
+            id="modal-close"
+            aria-label="Cerrar modal"
+          >
+            ✕
+          </button>
+        </header>
+        <div id="modal-content"></div>
+      </article>
+    </dialog>
+
+    <dialog
+      id="confirm-dialog"
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-title"
+      aria-describedby="confirm-description"
+    >
+      <article class="modal-card" tabindex="-1">
+        <h3 id="confirm-title" class="text-xl font-semibold">
+          Confirmar eliminacion
+        </h3>
+        <p id="confirm-description" class="mt-2 text-sm text-[var(--muted)]">
+          Esta accion es visual y no eliminara el registro realmente.
+        </p>
+        <div class="mt-6 flex flex-wrap justify-end gap-3">
+          <button id="confirm-cancel" type="button" class="btn-secondary">
+            Cancelar
+          </button>
+          <button id="confirm-accept" type="button" class="btn-danger">
+            Eliminar
+          </button>
+        </div>
+      </article>
+    </dialog>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
